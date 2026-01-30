@@ -1,0 +1,9 @@
+export type ErrorCode =
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "TOKEN_EXPIRED"
+  | "TOKEN_INVALID"
+  | "TOKEN_MISSING"
+  | "VALIDATION_ERROR"
+  | "NOT_FOUND"
+  | "INTERNAL_ERROR";
