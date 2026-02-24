@@ -25,9 +25,9 @@ export function signJWT<T extends object>(
   try {
     const signOptions: SignOptions = {
       expiresIn: options.expiresIn as any,
-      issuer: options.issuer,
-      audience: options.audience,
       algorithm: options.algorithm ?? "HS256",
+      ...(options.issuer ? { issuer: options.issuer } : {}),
+      ...(options.audience ? { audience: options.audience } : {}),
     };
 
     return jwt.sign(payload, options.secret, signOptions);
@@ -42,8 +42,8 @@ export function verifyJWT<T = unknown>(
 ): T {
   try {
     return jwt.verify(token, options.secret, {
-      issuer: options.issuer,
-      audience: options.audience,
+      ...(options.issuer ? { issuer: options.issuer } : {}),
+      ...(options.audience ? { audience: options.audience } : {}),
     }) as T;
   } catch (error: any) {
     if (error.name === "TokenExpiredError") {

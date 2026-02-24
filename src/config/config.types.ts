@@ -5,10 +5,16 @@ export interface JwtConfig {
   refreshTokenTtl: string; // e.g. "7d"
 }
 
-export interface AuthConfig {
+export interface AuthConfigSchema {
   jwt: JwtConfig;
 }
 
+export interface ServerConfig {
+  port: number;
+  nodeEnv: "development" | "production" | "test";
+}
+
 export interface AppConfig {
-  auth: AuthConfig;
+  auth: AuthConfigSchema;
+  server: ServerConfig;
 }

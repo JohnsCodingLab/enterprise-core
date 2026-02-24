@@ -6,4 +6,7 @@ export type ErrorCode =
   | "TOKEN_MISSING"
   | "VALIDATION_ERROR"
   | "NOT_FOUND"
+  | "BAD_REQUEST"
+  | "CONFLICT"
+  | "RATE_LIMITED"
   | "INTERNAL_ERROR";

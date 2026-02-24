@@ -5,10 +5,16 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
-  "engine": {
+  "engines": {
     "node": ">=20"
   },
   "scripts": {
@@ -31,7 +37,7 @@
     "backend",
     "typescript"
   ],
-  "author": "",
+  "author": "JohnsCodingLab",
   "license": "MIT",
   "publishConfig": {
     "access": "public"

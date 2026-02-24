@@ -6,9 +6,10 @@ import type { AccessTokenPayload, RefreshTokenPayload } from "./types.js";
 
 export interface AuthConfig {
   jwtSecret: string;
+  refreshTokenSecret?: string; // defaults to jwtSecret if not provided
   accessTokenExpiry?: string; // default: 15m
   refreshTokenExpiry?: string; // default: 7d
-  issuer?: string; // default: app-name
+  issuer?: string; // default: enterprise-core
   audience?: string;
 }
 
@@ -19,6 +20,7 @@ export function createAuth(config: AuthConfig) {
 
   const {
     jwtSecret,
+    refreshTokenSecret = jwtSecret,
     accessTokenExpiry = "15m",
     refreshTokenExpiry = "7d",
     issuer = "enterprise-core",
@@ -37,7 +39,7 @@ export function createAuth(config: AuthConfig) {
 
     issueRefreshToken(payload: RefreshTokenPayload): string {
       return signJWT(payload, {
-        secret: jwtSecret,
+        secret: refreshTokenSecret,
         expiresIn: refreshTokenExpiry,
         issuer,
         audience,
@@ -51,6 +53,18 @@ export function createAuth(config: AuthConfig) {
 
       return verifyJWT<AccessTokenPayload>(token, {
         secret: jwtSecret,
+        issuer,
+        audience,
+      });
+    },
+
+    verifyRefreshToken(token: string): RefreshTokenPayload {
+      if (!token) {
+        throw new AuthError("TOKEN_MISSING");
+      }
+
+      return verifyJWT<RefreshTokenPayload>(token, {
+        secret: refreshTokenSecret,
         issuer,
         audience,
       });

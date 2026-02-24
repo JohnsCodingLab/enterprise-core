@@ -5,7 +5,11 @@ export class AuthError extends AppError {
   constructor(
     code: Extract<
       ErrorCode,
-      "UNAUTHORIZED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "TOKEN_MISSING"
+      | "UNAUTHORIZED"
+      | "FORBIDDEN"
+      | "TOKEN_EXPIRED"
+      | "TOKEN_INVALID"
+      | "TOKEN_MISSING"
     >,
   ) {
     super({
