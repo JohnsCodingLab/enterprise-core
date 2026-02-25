@@ -1,61 +1,61 @@
 {
-  "name": "@johnscodinglab/enterprise-core",
-  "version": "0.1.0",
-  "description": "Enterprise-grade, framework-agnostic Node.js core utilities for authentication, errors, and configuration.",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "name": "@johnscodinglab/enterprise-core",
+    "version": "0.2.0",
+    "description": "Enterprise-grade, framework-agnostic Node.js core utilities for authentication, errors, and configuration.",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "engines": {
+        "node": ">=20"
+    },
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "test": "vitest",
+        "lint": "eslint .",
+        "format": "prettier --write .",
+        "prepublishOnly": "npm run build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/JohnsCodingLab/enterprise-core.git"
+    },
+    "keywords": [
+        "enterprise",
+        "node",
+        "auth",
+        "jwt",
+        "backend",
+        "typescript"
+    ],
+    "author": "JohnsCodingLab",
+    "license": "MIT",
+    "publishConfig": {
+        "access": "public"
+    },
+    "bugs": {
+        "url": "https://github.com/JohnsCodingLab/enterprise-core/issues"
+    },
+    "homepage": "https://github.com/JohnsCodingLab/enterprise-core#readme",
+    "devDependencies": {
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/node": "^25.1.0",
+        "eslint": "^9.39.2",
+        "prettier": "^3.8.1",
+        "tsup": "^8.5.1",
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.18"
+    },
+    "dependencies": {
+        "jsonwebtoken": "^9.0.3"
     }
-  },
-  "files": [
-    "dist"
-  ],
-  "engines": {
-    "node": ">=20"
-  },
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "test": "vitest",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "prepublishOnly": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JohnsCodingLab/enterprise-core.git"
-  },
-  "keywords": [
-    "enterprise",
-    "node",
-    "auth",
-    "jwt",
-    "backend",
-    "typescript"
-  ],
-  "author": "JohnsCodingLab",
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "bugs": {
-    "url": "https://github.com/JohnsCodingLab/enterprise-core/issues"
-  },
-  "homepage": "https://github.com/JohnsCodingLab/enterprise-core#readme",
-  "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.1.0",
-    "eslint": "^9.39.2",
-    "prettier": "^3.8.1",
-    "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
-  },
-  "dependencies": {
-    "jsonwebtoken": "^9.0.3"
-  }
 }

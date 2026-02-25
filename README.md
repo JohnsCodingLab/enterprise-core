@@ -15,6 +15,19 @@ Modern backend teams rewrite the same logic repeatedly:
 
 This package provides **secure defaults**, **clean APIs**, and **TypeScript-first tooling** — without locking you into any framework. Works with **Express, Fastify, NestJS, Hono, or plain Node.js**.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Authentication](#-authentication)
+- [Guards](#-guards)
+- [Error Handling](#-error-handling)
+- [Configuration](#-configuration)
+- [Utilities](#-utilities)
+- [Token Manager](#-token-manager)
+- [Rate Limiter](#-rate-limiter)
+- [API Reference](#api-reference)
+
 ## Installation
 
 ```bash
@@ -22,6 +35,30 @@ npm install @johnscodinglab/enterprise-core
 ```
 
 > **Requires Node.js ≥ 20**
+
+## Quick Start
+
+```typescript
+import {
+    createAuth,
+    requireRole,
+    NotFoundError,
+    serializeError,
+} from "@johnscodinglab/enterprise-core";
+
+// 1. Create an auth instance
+const auth = createAuth({ jwtSecret: process.env.JWT_SECRET! });
+
+// 2. Issue a token
+const token = auth.issueAccessToken({ userId: "user_123", role: "admin" });
+
+// 3. Verify it later
+const user = auth.verifyAccessToken(token);
+console.log(user.userId); // "user_123"
+
+// 4. Protect a route
+requireRole("admin")({ user }); // passes ✅ — throws if wrong role
+```
 
 ---
 
@@ -33,21 +70,21 @@ npm install @johnscodinglab/enterprise-core
 import { createAuth } from "@johnscodinglab/enterprise-core";
 
 const auth = createAuth({
-  jwtSecret: process.env.JWT_SECRET!,
-  refreshTokenSecret: process.env.JWT_REFRESH_SECRET!, // optional, defaults to jwtSecret
-  accessTokenExpiry: "15m",
-  refreshTokenExpiry: "7d",
-  issuer: "my-api",
+    jwtSecret: process.env.JWT_SECRET!,
+    refreshTokenSecret: process.env.JWT_REFRESH_SECRET!, // optional, defaults to jwtSecret
+    accessTokenExpiry: "15m",
+    refreshTokenExpiry: "7d",
+    issuer: "my-api",
 });
 
 // Issue tokens
 const accessToken = auth.issueAccessToken({
-  userId: "user_123",
-  role: "admin",
+    userId: "user_123",
+    role: "admin",
 });
 const refreshToken = auth.issueRefreshToken({
-  userId: "user_123",
-  tokenVersion: 1,
+    userId: "user_123",
+    tokenVersion: 1,
 });
 
 // Verify tokens
@@ -61,12 +98,12 @@ const refreshPayload = auth.verifyRefreshToken(refreshToken);
 import { signJWT, verifyJWT } from "@johnscodinglab/enterprise-core";
 
 const token = signJWT(
-  { data: "hello" },
-  {
-    secret: "my-secret",
-    expiresIn: "1h",
-    algorithm: "HS256", // default
-  },
+    { data: "hello" },
+    {
+        secret: "my-secret",
+        expiresIn: "1h",
+        algorithm: "HS256", // default
+    },
 );
 
 const payload = verifyJWT<{ data: string }>(token, { secret: "my-secret" });
@@ -80,20 +117,20 @@ Framework-agnostic authorization guards that work with any request context.
 
 ```typescript
 import {
-  requireAuth,
-  requireRole,
-  requireAnyRole,
-  requirePermission,
-  requireAllPermissions,
+    requireAuth,
+    requireRole,
+    requireAnyRole,
+    requirePermission,
+    requireAllPermissions,
 } from "@johnscodinglab/enterprise-core";
 
 // Define your context (attach user after JWT verification)
 const ctx = {
-  user: {
-    userId: "u1",
-    role: "admin",
-    permissions: ["read", "write", "delete"],
-  },
+    user: {
+        userId: "u1",
+        role: "admin",
+        permissions: ["read", "write", "delete"],
+    },
 };
 
 // Use guards
@@ -108,22 +145,22 @@ requireAllPermissions(["read", "write"])(ctx); // throws if missing any
 
 ```typescript
 function authMiddleware(req, res, next) {
-  try {
-    const token = extractBearerToken(req.headers.authorization);
-    req.user = auth.verifyAccessToken(token!);
-    next();
-  } catch (error) {
-    res.status(401).json(serializeError(error));
-  }
+    try {
+        const token = extractBearerToken(req.headers.authorization);
+        req.user = auth.verifyAccessToken(token!);
+        next();
+    } catch (error) {
+        res.status(401).json(serializeError(error));
+    }
 }
 
 function adminOnly(req, res, next) {
-  try {
-    requireRole("admin")({ user: req.user });
-    next();
-  } catch (error) {
-    res.status(403).json(serializeError(error));
-  }
+    try {
+        requireRole("admin")({ user: req.user });
+        next();
+    } catch (error) {
+        res.status(403).json(serializeError(error));
+    }
 }
 ```
 
@@ -146,11 +183,11 @@ function adminOnly(req, res, next) {
 
 ```typescript
 import {
-  NotFoundError,
-  BadRequestError,
-  ConflictError,
-  RateLimitedError,
-  serializeError,
+    NotFoundError,
+    BadRequestError,
+    ConflictError,
+    RateLimitedError,
+    serializeError,
 } from "@johnscodinglab/enterprise-core";
 
 // Throw typed errors
@@ -161,10 +198,10 @@ throw new RateLimitedError("Too many requests", 60); // retryAfterSeconds
 
 // Serialize for API responses
 app.use((err, req, res, next) => {
-  const serialized = serializeError(err, {
-    includeStack: process.env.NODE_ENV === "development",
-  });
-  res.status(serialized.statusCode).json(serialized);
+    const serialized = serializeError(err, {
+        includeStack: process.env.NODE_ENV === "development",
+    });
+    res.status(serialized.statusCode).json(serialized);
 });
 ```
 
@@ -192,18 +229,18 @@ config.server.nodeEnv; // "development" | "production" | "test"
 
 ```typescript
 import {
-  createConfigLoader,
-  requireString,
-  requireNumber,
-  requireBoolean,
-  optionalString,
+    createConfigLoader,
+    requireString,
+    requireNumber,
+    requireBoolean,
+    optionalString,
 } from "@johnscodinglab/enterprise-core";
 
 const loadMyConfig = createConfigLoader((env) => ({
-  databaseUrl: requireString(env, "DATABASE_URL"),
-  port: requireNumber(env, "PORT"),
-  debug: requireBoolean(env, "DEBUG"),
-  logLevel: optionalString(env, "LOG_LEVEL", "info"),
+    databaseUrl: requireString(env, "DATABASE_URL"),
+    port: requireNumber(env, "PORT"),
+    debug: requireBoolean(env, "DEBUG"),
+    logLevel: optionalString(env, "LOG_LEVEL", "info"),
 }));
 
 const config = loadMyConfig(process.env);
@@ -234,8 +271,8 @@ const isValid = await verifyPassword("my-secure-password", hash);
 import { createLogger } from "@johnscodinglab/enterprise-core";
 
 const logger = createLogger({
-  service: "auth-api",
-  level: "info", // "debug" | "info" | "warn" | "error"
+    service: "auth-api",
+    level: "info", // "debug" | "info" | "warn" | "error"
 });
 
 logger.info("User logged in", { userId: "123" });
@@ -246,8 +283,8 @@ logger.info("User logged in", { userId: "123" });
 
 ```typescript
 import {
-  generateRequestId,
-  extractBearerToken,
+    generateRequestId,
+    extractBearerToken,
 } from "@johnscodinglab/enterprise-core";
 
 const requestId = generateRequestId();
@@ -258,6 +295,114 @@ const token = extractBearerToken("Bearer eyJhbGci...");
 
 extractBearerToken(undefined); // → null
 extractBearerToken("Basic abc123"); // → null
+```
+
+### Pagination
+
+```typescript
+import { paginate } from "@johnscodinglab/enterprise-core";
+
+const meta = paginate({ page: 2, limit: 20, total: 95 });
+// → { page: 2, limit: 20, total: 95, totalPages: 5, offset: 20, hasNext: true, hasPrev: true }
+```
+
+### Response Envelope
+
+```typescript
+import {
+    success,
+    error,
+    paginate,
+    NotFoundError,
+} from "@johnscodinglab/enterprise-core";
+
+res.json(success({ id: "123", name: "John" }));
+// → { success: true, data: { id: "123", name: "John" } }
+
+res.json(success(users, paginate({ page: 1, limit: 20, total: 95 })));
+// → { success: true, data: [...], meta: { page: 1, totalPages: 5, ... } }
+
+res.json(error(new NotFoundError("User not found")));
+// → { success: false, error: { code: "NOT_FOUND", message: "...", statusCode: 404 } }
+```
+
+---
+
+## 🔄 Token Manager
+
+Full refresh token lifecycle with JTI tracking, token rotation, and session management.
+
+```typescript
+import {
+    createAuth,
+    createTokenManager,
+    createMemoryStore,
+} from "@johnscodinglab/enterprise-core";
+
+const auth = createAuth({ jwtSecret: "...", refreshTokenSecret: "..." });
+const tokenManager = createTokenManager({
+    auth,
+    store: createMemoryStore(), // use your own DB adapter in production
+});
+
+// Issue token pair (JTI stored automatically)
+const { accessToken, refreshToken } = await tokenManager.issueTokenPair({
+    userId: "user_123",
+    role: "admin",
+});
+
+// Refresh (rotates token — old revoked, new issued)
+const newTokens = await tokenManager.refresh(refreshToken);
+
+// Logout / Logout everywhere
+await tokenManager.revokeSession(refreshToken);
+await tokenManager.revokeAllSessions("user_123");
+```
+
+### Custom Store (Production)
+
+Implement the `TokenStore` interface with your database:
+
+```typescript
+const dbStore: TokenStore = {
+    save: async (token) => {
+        /* INSERT into your DB */
+    },
+    find: async (jti) => {
+        /* SELECT by jti */
+    },
+    revoke: async (jti) => {
+        /* SET revokedAt */
+    },
+    revokeAllForUser: async (userId) => {
+        /* bulk SET revokedAt */
+    },
+};
+```
+
+---
+
+## 🚦 Rate Limiter
+
+```typescript
+import {
+    createRateLimiter,
+    createMemoryRateLimitStore,
+} from "@johnscodinglab/enterprise-core";
+
+const limiter = createRateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100,
+    store: createMemoryRateLimitStore(),
+});
+
+const result = await limiter.consume(req.ip);
+if (!result.allowed) {
+    throw new RateLimitedError(
+        "Too many requests",
+        Math.ceil(result.retryAfterMs! / 1000),
+    );
+}
 ```
 
 ---
@@ -313,6 +458,16 @@ extractBearerToken("Basic abc123"); // → null
 | `createLogger(options?)`         | Function       | Structured JSON logger factory          |
 | `generateRequestId()`            | Function       | UUID v4 request ID                      |
 | `extractBearerToken(header)`     | Function       | Extract token from Authorization header |
+| `paginate(params)`               | Function       | Pagination metadata calculator          |
+| `success(data, meta?)`           | Function       | Success response envelope               |
+| `error(err, opts?)`              | Function       | Error response envelope                 |
+
+### Rate Limiter
+
+| Export                         | Type     | Description                     |
+| ------------------------------ | -------- | ------------------------------- |
+| `createRateLimiter(config)`    | Function | Sliding window rate limiter     |
+| `createMemoryRateLimitStore()` | Function | In-memory store for dev/testing |
 
 ---
 

@@ -1,10 +1,11 @@
 export type AccessTokenPayload = {
-  userId: string;
-  role?: string;
-  permissions?: string[];
+    userId: string;
+    role?: string | undefined;
+    permissions?: string[] | undefined;
 };
 
 export type RefreshTokenPayload = {
-  userId: string;
-  tokenVersion: number;
+    userId: string;
+    tokenVersion: number;
+    jti?: string | undefined;
 };
